@@ -1,7 +1,7 @@
 export default function Temple(options) {
   try {
     this.debug = options.debug;
-    this._element = document.querySelector(options.selector);
+    this.selector = document.querySelector(options.selector);
     this.state = JSON.parse(JSON.stringify(options.state));
     this.render =
       typeof options.render === 'function'
@@ -12,7 +12,7 @@ export default function Temple(options) {
     this.addEvents = options.addEvents.bind(this) || function () {};
     this.removeEvents = options.removeEvents.bind(this) || function () {};
     this.update();
-    this.addEvents();
+    this.addEvents.bind(this)();
     options.onInit && options.onInit.bind(this)();
   } catch (e) {
     console.error(e);
@@ -31,10 +31,10 @@ Temple.prototype.update = function () {
   var newTemplate = this.render(this.state);
   if (this.oldTemplate !== newTemplate) {
     this.oldTemplate = newTemplate;
-    this._element.innerHTML = this.render(this.state);
+    this.selector.innerHTML = this.render(this.state);
+    this.removeEvents();
+    this.addEvents();
   }
-  this.removeEvents();
-  this.addEvents();
 };
 
 Temple.prototype.setState = function (changeObject) {

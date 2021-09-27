@@ -25,13 +25,13 @@ const app = new Temple({
     },
   },
   addEvents() {
-    document
-      .getElementById('btn')
+    this.selector
+      .querySelector('#btn')
       .addEventListener('click', this.methods.increment);
   },
   removeEvents() {
-    document
-      .getElementById('btn')
+    this.selector
+      .querySelector('#btn')
       .removeEventListener('click', this.methods.increment);
   },
 });
