@@ -1,20 +1,37 @@
 import Temple from './temple';
-// Import stylesheets
 import './style.css';
 
-// Write Javascript code!
-
-const temple = new Temple({
+const app = new Temple({
   selector: '#app',
+  debug: true,
   state: {
     name: 'JS Starter',
-    nums: [1, 2, 3],
+    nums: [],
   },
-  view(state) {
-    return `<h1>${state.name}</h1>
-      ${Temple.map(state.nums)`hello, ${state.name} ${state.name}`}
+  render() {
+    const { name, nums } = this.state;
+    return `<h1>${name}</h1>
+            <input value="${nums.length}">
+            <button id="btn">Click me</button>
+          ${Temple.map(nums, (item) => `<div>${name} : ${item}</div>`)}
     `;
   },
+  onInit() {
+    console.log('initialized');
+  },
+  methods: {
+    increment() {
+      app.setState({ nums: [...app.state.nums, new Date().getTime()] });
+    },
+  },
+  addEvents() {
+    document
+      .getElementById('btn')
+      .addEventListener('click', this.methods.increment);
+  },
+  removeEvents() {
+    document
+      .getElementById('btn')
+      .removeEventListener('click', this.methods.increment);
+  },
 });
-
-temple.setState({ name: 'React', nums: [2, 3, 4] });

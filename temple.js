@@ -1,30 +1,53 @@
 export default function Temple(options) {
   try {
-    const { selector, state, view } = options;
-    this._element = document.querySelector(selector);
-    this.state = JSON.parse(JSON.stringify(state));
-    this._view = view;
-    this.render();
+    this.debug = options.debug;
+    this._element = document.querySelector(options.selector);
+    this.state = JSON.parse(JSON.stringify(options.state));
+    this.render =
+      typeof options.render === 'function'
+        ? options.render.bind(this)
+        : this.error('render function require');
+
+    this.methods = options.methods || {};
+    this.addEvents = options.addEvents.bind(this) || function () {};
+    this.removeEvents = options.removeEvents.bind(this) || function () {};
+    this.update();
+    this.addEvents();
+    options.onInit && options.onInit.bind(this)();
   } catch (e) {
-    console.error('Temple:', e.stack);
+    console.error(e);
   }
 }
 
-Temple.prototype.render = function () {
-  this._element.innerHTML = this._view(this.state);
+Temple.prototype.error = function (message) {
+  throw new Error(`Temple: ${message}`);
+};
+
+Temple.prototype.update = function () {
+  if (this.debug) {
+    console.log(this.state);
+  }
+
+  var newTemplate = this.render(this.state);
+  if (this.oldTemplate !== newTemplate) {
+    this.oldTemplate = newTemplate;
+    this._element.innerHTML = this.render(this.state);
+  }
+  this.removeEvents();
+  this.addEvents();
 };
 
 Temple.prototype.setState = function (changeObject) {
   for (let key in changeObject) {
     this.state[key] = changeObject[key];
   }
-  this.render();
+  this.update();
 };
 
-Temple.map = function () {
-  console.log(arguments);
-  console.log('once');
-  return function template() {
-    debugger;
-  };
+Temple.map = function (collection, template) {
+  var str = '';
+  collection.forEach(
+    (item, index, self) => (str += template(item, index, self))
+  );
+  return str;
 };
