@@ -5,19 +5,20 @@ const app = new Temple({
   selector: '#app',
   debug: true,
   state: {
-    name: 'JS Starter',
+    name: 'Temple.js',
     nums: [],
   },
   render() {
-    const { name, nums } = this.state;
-    return `<h1>${name}</h1>
-            <input value="${nums.length}">
+    return `<h1>${this.state.name}</h1>
+            <input value="${this.state.nums.length}">
             <button id="btn">Click me</button>
-          ${Temple.map(nums, (item) => `<div>${name} : ${item}</div>`)}
+            <ul>
+              ${Temple.map(this.state.nums, (item) => `<li>${item}</li>`)}
+            </ul>
     `;
   },
   onInit() {
-    console.log('initialized');
+    console.log('initialized', this);
   },
   methods: {
     increment() {
@@ -28,10 +29,5 @@ const app = new Temple({
     this.selector
       .querySelector('#btn')
       .addEventListener('click', this.methods.increment);
-  },
-  removeEvents() {
-    this.selector
-      .querySelector('#btn')
-      .removeEventListener('click', this.methods.increment);
   },
 });
